@@ -1,0 +1,109 @@
+#! /bin/bash
+# Copyright (C) 2019  Petter A. Urkedal <urkedal@ndgf.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Parameters:
+#   cloud_userdata_file=<relative-path>
+
+set -e
+
+. common.sh
+
+
+# Mount root FS
+
+targetdev="$DISK_0_PATH"
+
+qemu-img convert -f qcow2 -O raw "$IMAGE_DIR/$IMAGE_FILE" "$targetdev"
+
+rootmnt="`mktemp -d`"
+atexit "rmdir $rootmnt"
+
+kpartx -a "$targetdev"
+atexit "kpartx -d $targetdev"
+
+mapperbase="/dev/mapper/`basename $targetdev`"
+rootdev="${mapperbase}p1"
+mount "$rootdev" "$rootmnt"
+atexit "umount $rootmnt"
+
+mkdir -p "${rootmnt}${CLOUD_SEED_DIR}"
+
+
+# Locate and copy user-data
+
+if [ -n "${OSP_CLOUD_USERDATA_FILE}" -a \
+     -e "/etc/ganeti/nocloud/user-data/${OSP_CLOUD_USERDATA_FILE}" ]; then
+    os_userdata="/etc/ganeti/nocloud/user-data/${OSP_CLOUD_USERDATA_FILE}"
+else
+    for file in "${OS_VARIANT}.yml" "default.yml"; do
+	if [ -e "/etc/ganeti/nocloud/user-data/${file}" ]; then
+	    os_userdata="/etc/ganeti/nocloud/user-data/${file}"
+	    break
+	fi
+    done
+fi
+if [ -n "$os_userdata" ]; then
+    cp "$os_userdata" "${rootmnt}${CLOUD_SEED_DIR}/user-data"
+fi
+
+
+# Generate meta-data and network-config
+
+instance_id=$(uuidgen -r)
+
+cat >"${rootmnt}${CLOUD_SEED_DIR}/meta-data" <<EOF
+instance-id: ${instance_id}
+hostname: ${INSTANCE_NAME}
+EOF
+
+have_some_nic_ip()
+{
+    for i in $(seq 0 $(expr $NIC_COUNT - 1)); do
+	nic_ip=$(eval echo \$NIC_${i}_IP)
+	[ -z "$nic_ip" ] || return 0
+    done
+    return 1
+}
+
+generate_network_config()
+{
+    echo "version: 2"
+    echo "ethernets:"
+    for i in $(seq 0 $(expr $NIC_COUNT - 1)); do
+	nic_ip=$(eval echo \$NIC_${i}_IP)
+	[ -n "$nic_ip" ] || continue
+	nic_mac=$(eval echo \$NIC_${i}_MAC)
+	nic_network_subnet=$(eval echo \$NIC_${i}_NETWORK_SUBNET)
+	nic_gateway4=$(eval echo \$NIC_${i}_NETWORK_GATEWAY)
+	nic_gateway6=$(eval echo \$NIC_${i}_NETWORK_GATEWAY6)
+	echo     "  eth0:"
+	if [ -n "$nic_mac" ]; then
+	    echo "    match: {macaddress: '$nic_mac'}"
+	else
+	    echo "    match: {name: 'eth${i}'}"
+	fi
+	echo     "    addresses: ['${nic_ip}/${nic_network_subnet:-24}']"
+	if [ -n "$nic_gateway4" ]; then
+	    echo "    gateway4: '${nic_gateway4}'"
+	fi
+	if [ -n "$nic_gateway6" ]; then
+	    echo "    gateway6: '${nic_gateway6}'"
+	fi
+    done
+}
+if have_some_nic_ip; then
+    generate_network_config >"${rootmnt}${CLOUD_SEED_DIR}/network-config"
+fi

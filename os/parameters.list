@@ -1,0 +1,1 @@
+cloud_userdata_file The name of the user-data file to supply. The file is expected under /etc/ganeti/nocloud/user-data.
