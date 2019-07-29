@@ -1,0 +1,17 @@
+Source: ganeti-os-nocloud
+Section: admin
+Priority: optional
+Maintainer: Petter A. Urkedal <urkedal@ndgf.org>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.2
+Homepage: https://github.com/neicnordic/ganeti-os-nocloud
+Vcs-Git: https://github.com/neicnordic/ganeti-os-nocloud.git
+Vcs-Browser: https://github.com/neicnordic/ganeti-os-nocloud
+
+Package: ganeti-os-nocloud
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, kpartx, uuid-runtime
+Description: Ganeti OS definition for deploying cloud-init images
+ This package provides a Ganeti OS definition for cloud-init images.  It
+ injects user-data and meta-data directly into the root files system of the
+ target OS, picked up by the NoCloud data source.
