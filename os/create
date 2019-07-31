@@ -91,7 +91,7 @@ generate_network_config()
 	nic_network_subnet6=$(eval echo \$NIC_${i}_NETWORK_SUBNET6)
 	nic_gateway4=$(eval echo \$NIC_${i}_NETWORK_GATEWAY)
 	nic_gateway6=$(eval echo \$NIC_${i}_NETWORK_GATEWAY6)
-	echo             "  eth0:"
+	echo             "  eth${i}:"
 	if [ -n "$nic_mac" ]; then
 	    echo         "    match: {macaddress: '$nic_mac'}"
 	else
