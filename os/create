@@ -158,6 +158,6 @@ generate_network_config()
 	fi
     done
 }
-if have_some_nic_ip; then
+if have_some_nic_ip || [ -n "$OSP_STATIC_HOST_INTERFACE" ]; then
     generate_network_config >"${rootmnt}${CLOUD_SEED_DIR}/network-config"
 fi
