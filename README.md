@@ -22,6 +22,9 @@ where `variant` is one of `/etc/ganeti/nocloud/variants.list`:
 
     gnt-instance add -s 7G nocloud+ubuntu-18.04 vm1.example.org
 
+For static IP configuration, add an network and  IP number to the network
+device with e.g. `--net 0:network=local,ip=172.16.0.20`.
+
 [Ganeti]: http://www.ganeti.org/
 [cloud-init]: https://cloudinit.readthedocs.io/en/latest/
 [NoCloud]: https://cloudinit.readthedocs.io/en/latest/topics/datasources/nocloud.html

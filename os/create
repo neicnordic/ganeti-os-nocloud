@@ -80,13 +80,15 @@ have_some_nic_ip()
 
 generate_network_config()
 {
+    local prefixlen
     echo "version: 2"
     echo "ethernets:"
     for i in $(seq 0 $(expr $NIC_COUNT - 1)); do
 	nic_ip=$(eval echo \$NIC_${i}_IP)
 	[ -n "$nic_ip" ] || continue
 	nic_mac=$(eval echo \$NIC_${i}_MAC)
-	nic_network_subnet=$(eval echo \$NIC_${i}_NETWORK_SUBNET)
+	nic_network_subnet4=$(eval echo \$NIC_${i}_NETWORK_SUBNET)
+	nic_network_subnet6=$(eval echo \$NIC_${i}_NETWORK_SUBNET6)
 	nic_gateway4=$(eval echo \$NIC_${i}_NETWORK_GATEWAY)
 	nic_gateway6=$(eval echo \$NIC_${i}_NETWORK_GATEWAY6)
 	echo     "  eth0:"
@@ -95,7 +97,23 @@ generate_network_config()
 	else
 	    echo "    match: {name: 'eth${i}'}"
 	fi
-	echo     "    addresses: ['${nic_ip}/${nic_network_subnet:-24}']"
+	case "$nic_ip" in
+	    *.*.*.*)
+		if [ -z "$nic_network_subnet4" ]; then
+		    prefixlen=24
+		else
+		    prefixlen="${nic_network_subnet4#*/}"
+		fi
+		;;
+	    *)
+		if [ -z "$nic_network_subnet6" ]; then
+		    prefixlen=64
+		else
+		    prefixlen="${nic_network_subnet6#*/}"
+		fi
+		;;
+	esac
+	echo     "    addresses: ['${nic_ip}/${prefixlen}']"
 	if [ -n "$nic_gateway4" ]; then
 	    echo "    gateway4: '${nic_gateway4}'"
 	fi
