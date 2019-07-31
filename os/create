@@ -80,7 +80,7 @@ have_some_nic_ip()
 
 generate_network_config()
 {
-    local prefixlen
+    local address prefixlen
     echo "version: 2"
     echo "ethernets:"
     for i in $(seq 0 $(expr $NIC_COUNT - 1)); do
@@ -91,11 +91,11 @@ generate_network_config()
 	nic_network_subnet6=$(eval echo \$NIC_${i}_NETWORK_SUBNET6)
 	nic_gateway4=$(eval echo \$NIC_${i}_NETWORK_GATEWAY)
 	nic_gateway6=$(eval echo \$NIC_${i}_NETWORK_GATEWAY6)
-	echo     "  eth0:"
+	echo             "  eth0:"
 	if [ -n "$nic_mac" ]; then
-	    echo "    match: {macaddress: '$nic_mac'}"
+	    echo         "    match: {macaddress: '$nic_mac'}"
 	else
-	    echo "    match: {name: 'eth${i}'}"
+	    echo         "    match: {name: 'eth${i}'}"
 	fi
 	case "$nic_ip" in
 	    *.*.*.*)
@@ -113,12 +113,25 @@ generate_network_config()
 		fi
 		;;
 	esac
-	echo     "    addresses: ['${nic_ip}/${prefixlen}']"
+	echo             "    addresses: ['${nic_ip}/${prefixlen}']"
 	if [ -n "$nic_gateway4" ]; then
-	    echo "    gateway4: '${nic_gateway4}'"
+	    echo         "    gateway4: '${nic_gateway4}'"
 	fi
 	if [ -n "$nic_gateway6" ]; then
-	    echo "    gateway6: '${nic_gateway6}'"
+	    echo         "    gateway6: '${nic_gateway6}'"
+	fi
+	if [ -n "$OSP_DNS_NAMESERVERS" ]; then
+	    echo         "    nameservers:"
+	    echo         "        addresses:"
+	    for address in ${OSP_DNS_NAMESERVERS//,/ }; do
+		echo     "          - '${address}'"
+	    done
+	    if [ -n "${OSP_DNS_SEARCH}" ]; then
+		echo     "        search:"
+		for address in ${OSP_DNS_SEARCH//,/ }; do
+		    echo "          - '${address}'"
+		done
+	    fi
 	fi
     done
 }

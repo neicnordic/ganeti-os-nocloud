@@ -1,1 +1,3 @@
 cloud_userdata_file The name of the user-data file to supply. The file is expected under /etc/ganeti/nocloud/user-data.
+dns_nameservers A comma-separated list of IP numbers of name servers.
+dns_search A comma-separated list of domains to search for incomplete domains.
