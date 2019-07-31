@@ -78,14 +78,23 @@ have_some_nic_ip()
     return 1
 }
 
+lookup_ipv4()
+{
+    host -t A $1 | sed 's/.* address //' | grep -E '^[0-9.]+$'
+}
+lookup_ipv6()
+{
+    host -t AAAA $1 | sed 's/.* address //' | grep -E '^[0-9a-f:]+$'
+}
+
 generate_network_config()
 {
-    local address prefixlen
+    local address i ip ipv4_prefixlen ipv6_prefixlen prefixlen
     echo "version: 2"
     echo "ethernets:"
     for i in $(seq 0 $(expr $NIC_COUNT - 1)); do
 	nic_ip=$(eval echo \$NIC_${i}_IP)
-	[ -n "$nic_ip" ] || continue
+	[ -n "$nic_ip" -o $i = ${OSP_STATIC_HOST_INTERFACE:--1} ] || continue
 	nic_mac=$(eval echo \$NIC_${i}_MAC)
 	nic_network_subnet4=$(eval echo \$NIC_${i}_NETWORK_SUBNET)
 	nic_network_subnet6=$(eval echo \$NIC_${i}_NETWORK_SUBNET6)
@@ -97,23 +106,37 @@ generate_network_config()
 	else
 	    echo         "    match: {name: 'eth${i}'}"
 	fi
+	if [ -z "$nic_network_subnet4" ]; then
+	    ipv4_prefixlen=24
+	else
+	    ipv4_prefixlen="${nic_network_subnet4#*/}"
+	fi
+	if [ -z "$nic_network_subnet6" ]; then
+	    ipv6_prefixlen=64
+	else
+	    ipv6_prefixlen="${nic_network_subnet6#*/}"
+	fi
+	echo             "    addresses:"
 	case "$nic_ip" in
 	    *.*.*.*)
-		if [ -z "$nic_network_subnet4" ]; then
-		    prefixlen=24
-		else
-		    prefixlen="${nic_network_subnet4#*/}"
-		fi
+		echo     "      - '${nic_ip}/${ipv4_prefixlen}'"
 		;;
-	    *)
-		if [ -z "$nic_network_subnet6" ]; then
-		    prefixlen=64
-		else
-		    prefixlen="${nic_network_subnet6#*/}"
-		fi
+	    *:*)
+		echo     "      - '${nic_ip}/${ipv6_prefixlen}'"
 		;;
 	esac
-	echo             "    addresses: ['${nic_ip}/${prefixlen}']"
+	if [ $i = ${OSP_STATIC_HOST_INTERFACE:--1} ]; then
+	    for ip in $(lookup_ipv4 $INSTANCE_NAME); do
+		if [ "$ip" != "$nic_ip" ]; then
+		    echo "      - '${ip}/${ipv4_prefixlen}'"
+		fi
+	    done
+	    for ip in $(lookup_ipv6 $INSTANCE_NAME); do
+		if [ "$ip" != "$nic_ip" ]; then
+		    echo "      - '${ip}/${ipv6_prefixlen}'"
+		fi
+	    done
+	fi
 	if [ -n "$nic_gateway4" ]; then
 	    echo         "    gateway4: '${nic_gateway4}'"
 	fi
