@@ -1,6 +1,7 @@
 .PHONY: help install
 
 osdir = /usr/share/ganeti/os/nocloud
+imgdir = /var/cache/ganeti-cloudimg
 confdir = /etc/ganeti/nocloud
 variants = $(shell cat os/variants.list)
 
@@ -25,3 +26,4 @@ install:
 	for v in $(variants); do \
 	    install -m 644 os/variants/$${v}.conf ${DESTDIR}$(confdir)/variants/$${v}.conf; \
 	done
+	install -m 755 -d ${DESTDIR}$(imgdir)
