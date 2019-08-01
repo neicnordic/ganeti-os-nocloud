@@ -22,8 +22,13 @@ where `variant` is one of `/etc/ganeti/nocloud/variants.list`:
 
     gnt-instance add -s 7G nocloud+ubuntu-18.04 vm1.example.org
 
-For static IP configuration, add an network and  IP number to the network
-device with e.g. `--net 0:network=local,ip=172.16.0.20`.
+For static IP configuration add an network and an IP number to the interface
+with e.g. `--net 0:network=local,ip=172.16.0.20`.  If you pass `-O
+static_host_interface=0` then all IPs from the DNS A and AAAA records for
+the host will be added to the first interface, in which case the `ip`
+network parameter may be omitted.  This allows creating IPv6-only VMs or VMs
+with multiple IP numbers.
+
 
 [Ganeti]: http://www.ganeti.org/
 [cloud-init]: https://cloudinit.readthedocs.io/en/latest/
