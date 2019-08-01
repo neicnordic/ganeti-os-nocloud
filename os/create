@@ -14,9 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Parameters:
-#   cloud_userdata_file=<relative-path>
-
 set -e
 
 . common.sh
@@ -44,9 +41,12 @@ mkdir -p "${rootmnt}${CLOUD_SEED_DIR}"
 
 # Locate and copy user-data
 
-if [ -n "${OSP_CLOUD_USERDATA_FILE}" -a \
-     -e "/etc/ganeti/nocloud/user-data/${OSP_CLOUD_USERDATA_FILE}" ]; then
-    os_userdata="/etc/ganeti/nocloud/user-data/${OSP_CLOUD_USERDATA_FILE}"
+if [ -n "${OSP_CLOUD_USERDATA_FILE}" ]; then
+    if [ "${OSP_CLOUD_USERDATA_FILE:0:1}" = "/" ]; then
+	os_userdata="${OSP_CLOUD_USERDATA_FILE}"
+    else
+	os_userdata="/etc/ganeti/nocloud/user-data/${OSP_CLOUD_USERDATA_FILE}"
+    fi
 else
     for file in "${OS_VARIANT}.yml" "default.yml"; do
 	if [ -e "/etc/ganeti/nocloud/user-data/${file}" ]; then

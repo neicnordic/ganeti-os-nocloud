@@ -1,4 +1,4 @@
-cloud_userdata_file The name of the user-data file to supply. The file is expected under /etc/ganeti/nocloud/user-data.
+cloud_userdata_file The path of the user-data file to supply, either as an absolute or relative to /etc/ganeti/nocloud/user-data.  By default ${OS_VARIANT}.yml or default.yml are searched in that order.
 dns_nameservers A comma-separated list of IP numbers of name servers.
 dns_search A comma-separated list of domains to search for incomplete domains.
 static_host_interface Set to an interface number, that inteface will be statically configured with all IP numbers reported by DNS for the host name.  This can be used to configure IPv6-only hosts or assign multiple IP numbers on the same interface during cloud-init, as the --net ip option only allows a single IPv4 number.
