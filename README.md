@@ -6,7 +6,7 @@ picked up by the [NoCloud][] data source.
 
 ## Usage
 
-### Image Download
+### Preparation
 
 Download the needed cloud-init images to `/var/cache/ganeti-cloudimg` and
 distribute them to all nodes.  The expected file name of an image is
@@ -17,7 +17,8 @@ configuration file and add the name to `/etc/ganeti/nocloud/variants.list`.
 Next, put your [cloud config data][cloud-config] under
 `/etc/ganeti/nocloud/user-data/`.  The OS creation script will look for
 `${OS_VARIANT}.yml` then `default.yml` by default, but you can provide an
-alternative file name with the `cloud_userdata_file` OS parameter.
+alternative file name with the `cloud_userdata_file` OS parameter.  This
+parameter also accepts an absolute path, e.g. to deliver files from `/tmp`.
 
 ### VM Creation
 
