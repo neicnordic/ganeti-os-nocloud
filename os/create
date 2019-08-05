@@ -25,7 +25,7 @@ targetdev="$DISK_0_PATH"
 
 qemu-img convert -f qcow2 -O raw "$IMAGE_DIR/$IMAGE_FILE" "$targetdev"
 
-rootmnt="`mktemp -d`"
+rootmnt="`mktemp -d /tmp/ganeti-os-nocloud-root.XXXXXX`"
 atexit "rmdir $rootmnt"
 
 kpartx -a "$targetdev"
@@ -41,22 +41,44 @@ mkdir -p "${rootmnt}${CLOUD_SEED_DIR}"
 
 # Locate and copy user-data
 
-if [ -n "${OSP_CLOUD_USERDATA_FILE}" ]; then
-    if [ "${OSP_CLOUD_USERDATA_FILE:0:1}" = "/" ]; then
-	os_userdata="${OSP_CLOUD_USERDATA_FILE}"
-    else
-	os_userdata="/etc/ganeti/nocloud/user-data/${OSP_CLOUD_USERDATA_FILE}"
-    fi
+compose_userdata()
+{
+    local parts part payload
+    parse_list_parameter parts "${OSP_CLOUD_USERDATA}"
+    for part in "${parts[@]}"; do
+	payload="${part#*:}"
+	case "${part%%:*}" in
+	    file)
+		(cd /etc/ganeti/nocloud/user-data; cat "${payload}")
+		;;
+	    base64)
+		echo -n "${payload}" | base64 -d
+		;;
+	    line)
+		echo "${payload}"
+		;;
+	    http|https|ftp|sftp|tftp|scp)
+		curl -s "${payload}"
+		;;
+	esac
+    done
+}
+
+if [ -n "${OSP_CLOUD_USERDATA}" ]; then
+    # Using an intermediate temporary file to avoid holding the mount point in
+    # case something goes wrong.
+    userdata=`mktemp /tmp/ganeti-os-nocloud-userdata.XXXXXX`
+    atexit "rm -f $userdata"
+    compose_userdata > "${userdata}"
+    cp "${userdata}" "${rootmnt}${CLOUD_SEED_DIR}/user-data"
 else
     for file in "${OS_VARIANT}.yml" "default.yml"; do
 	if [ -e "/etc/ganeti/nocloud/user-data/${file}" ]; then
-	    os_userdata="/etc/ganeti/nocloud/user-data/${file}"
+	    cat "/etc/ganeti/nocloud/user-data/${file}" \
+		> "${rootmnt}${CLOUD_SEED_DIR}/user-data"
 	    break
 	fi
     done
-fi
-if [ -n "$os_userdata" ]; then
-    cp "$os_userdata" "${rootmnt}${CLOUD_SEED_DIR}/user-data"
 fi
 
 
