@@ -90,6 +90,8 @@ lookup_ipv6()
 generate_network_config()
 {
     local address i ip ipv4_prefixlen ipv6_prefixlen prefixlen
+    local dns_nameservers dns_search
+    local IFS=,
     echo "version: 2"
     echo "ethernets:"
     for i in $(seq 0 $(expr $NIC_COUNT - 1)); do
@@ -146,12 +148,14 @@ generate_network_config()
 	if [ -n "$OSP_DNS_NAMESERVERS" ]; then
 	    echo         "    nameservers:"
 	    echo         "        addresses:"
-	    for address in ${OSP_DNS_NAMESERVERS//,/ }; do
+	    parse_parameter_list dns_nameservers "$OSP_DNS_NAMESERVERS"
+	    for address in "${dns_nameservers[@]}"; do
 		echo     "          - '${address}'"
 	    done
 	    if [ -n "${OSP_DNS_SEARCH}" ]; then
 		echo     "        search:"
-		for address in ${OSP_DNS_SEARCH//,/ }; do
+		parse_parameter_list dns_search "$OSP_DNS_SEARCH"
+		for address in "${dns_search[@]}"; do
 		    echo "          - '${address}'"
 		done
 	    fi

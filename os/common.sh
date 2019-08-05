@@ -44,3 +44,19 @@ atexit()
     [ $# = 1 ] || die "Usage: atexit COMMAND"
     _atexit_jobs+=("$1")
 }
+
+parse_list_parameter()
+{
+    local IFS=,
+    local local__q local__qs local__x
+    local__qs="${2//%/%45}"
+    local__qs="${local__qs//\\\\/%5c}"
+    local__qs="${local__qs//\\,/%54}"
+    eval "$1=( )"
+    for local__q in $local__qs; do
+	local__x="${local__q//%54/,}"
+	local__x="${local__x//%5c/\\}"
+	local__x="${local__x//%45/%}"
+	eval $1+='("$local__x")'
+    done
+}
