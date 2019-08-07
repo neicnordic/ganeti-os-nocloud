@@ -170,13 +170,13 @@ generate_network_config()
 	if [ -n "$OSP_DNS_NAMESERVERS" ]; then
 	    echo         "    nameservers:"
 	    echo         "        addresses:"
-	    parse_parameter_list dns_nameservers "$OSP_DNS_NAMESERVERS"
+	    parse_list_parameter dns_nameservers "$OSP_DNS_NAMESERVERS"
 	    for address in "${dns_nameservers[@]}"; do
 		echo     "          - '${address}'"
 	    done
 	    if [ -n "${OSP_DNS_SEARCH}" ]; then
 		echo     "        search:"
-		parse_parameter_list dns_search "$OSP_DNS_SEARCH"
+		parse_list_parameter dns_search "$OSP_DNS_SEARCH"
 		for address in "${dns_search[@]}"; do
 		    echo "          - '${address}'"
 		done
