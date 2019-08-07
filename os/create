@@ -70,15 +70,16 @@ if [ -n "${OSP_CLOUD_USERDATA}" ]; then
     userdata=`mktemp /tmp/ganeti-os-nocloud-userdata.XXXXXX`
     atexit "rm -f $userdata"
     compose_userdata > "${userdata}"
-    cp "${userdata}" "${rootmnt}${CLOUD_SEED_DIR}/user-data"
 else
     for file in "${OS_VARIANT}.yml" "default.yml"; do
 	if [ -e "/etc/ganeti/nocloud/user-data/${file}" ]; then
-	    cat "/etc/ganeti/nocloud/user-data/${file}" \
-		> "${rootmnt}${CLOUD_SEED_DIR}/user-data"
+	    userdata="/etc/ganeti/nocloud/user-data/${file}"
 	    break
 	fi
     done
+fi
+if [ -n "${userdata}" ]; then
+    install -m600 "${userdata}" "${rootmnt}${CLOUD_SEED_DIR}/user-data"
 fi
 
 
