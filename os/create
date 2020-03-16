@@ -89,7 +89,8 @@ instance_id=$(uuidgen -r)
 
 cat >"${rootmnt}${CLOUD_SEED_DIR}/meta-data" <<EOF
 instance-id: ${instance_id}
-hostname: ${INSTANCE_NAME}
+preserve_hostname: false
+fqdn: ${INSTANCE_NAME}
 EOF
 
 have_some_nic_ip()
