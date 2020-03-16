@@ -1,3 +1,9 @@
+ganeti-os-nocloud (0.0.1~dev-2) UNRELEASED; urgency=medium
+
+  * Update
+
+ -- Petter A. Urkedal <urkedal@ndgf.org>  Mon, 16 Mar 2020 15:19:00 +0100
+
 ganeti-os-nocloud (0.0.1~dev-1) UNRELEASED; urgency=medium
 
   * Initial release
