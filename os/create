@@ -27,13 +27,25 @@ qemu-img convert -f qcow2 -O raw "$IMAGE_DIR/$IMAGE_FILE" "$targetdev"
 
 rootmnt="`mktemp -d /tmp/ganeti-os-nocloud-root.XXXXXX`"
 atexit "rmdir $rootmnt"
+ 
+filesystem_dev_base=`kpartx -l -p- $targetdev | \
+                     grep -m 1 -- "-1 : .*$targetdev" | \
+                     awk '{print $1}'`
+if [ -z "$filesystem_dev_base" ]; then
+  log_error "Cannot interpret kpartx output and get partition mapping"
+  exit 1
+fi
 
-kpartx -a "$targetdev"
-atexit "kpartx -d $targetdev"
+kpartx -a -s -p- $targetdev > /dev/null
+atexit "kpartx -d -s -p- $targetdev"
 
-mapperbase="/dev/mapper/`basename $targetdev`"
-rootdev="${mapperbase}p1"
-mount "$rootdev" "$rootmnt"
+filesystem_dev="/dev/mapper/$filesystem_dev_base"
+if [ ! -b "$filesystem_dev" ]; then
+  log_error "Can't find kpartx mapped partition: $filesystem_dev"
+  exit 1
+fi
+ 
+mount "$filesystem_dev" "$rootmnt"
 atexit "umount $rootmnt"
 
 mkdir -p "${rootmnt}${CLOUD_SEED_DIR}"
