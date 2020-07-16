@@ -90,6 +90,7 @@ instance_id=$(uuidgen -r)
 cat >"${rootmnt}${CLOUD_SEED_DIR}/meta-data" <<EOF
 instance-id: ${instance_id}
 preserve_hostname: false
+local-hostname: ${INSTANCE_NAME}
 fqdn: ${INSTANCE_NAME}
 EOF
 
