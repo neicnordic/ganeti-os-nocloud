@@ -16,9 +16,9 @@ configuration file and add the name to `/etc/ganeti/nocloud/variants.list`.
 
 Next, put your [cloud config data][cloud-config] under
 `/etc/ganeti/nocloud/user-data/`.  The OS creation script will look for
-`${OS_VARIANT}.yml` then `default.yml` by default, but you can provide an
-alternative file name with the `cloud_userdata_file` OS parameter.  This
-parameter also accepts an absolute path, e.g. to deliver files from `/tmp`.
+`${OS_VARIANT}.yml` then `default.yml`. Alternatively provide user data by
+setting the `cloud_userdata` OS parameter to a list of sources, see the
+documentation of this parameter below.
 
 ### VM Creation
 
@@ -41,8 +41,39 @@ DNS configuration can be passed though the OS parameters `dns_nameservers`
 and `dns_search` which are comma-separated lists of IPs and domains,
 respectively.
 
+## OS Parameters
+
+### `cloud_userdata`
+
+A comma-separate list of user-data sources.  The sources will be merged
+using the [cloud-init merging algorithm][cloud-init-merge] which can be
+configured with a `merge_how` key as documented on that page. The following
+kinds are supported:
+
+  - `file:<path>` includes the file at `<path>` on the Ganeti node, which
+    can be absolute or relative to `/etc/ganeti/nocloud/user-data`.
+  - `script:<path>` includes the standard output of running `<path>` on the
+    Ganeti node. The path is relative to `/etc/ganeti/nocloud/user-data` if
+    not absolute. To run the script on the VM, use `file:<path>` instead.
+  - `base64:<data>` includes the base 64 decoding of `<data>`.
+  - `<url>` will be delivered to cloud-init as is, where schemes recognized
+    as belonging to URLs include `http`, `https`, `ftp`, `sftp`, `tftp`, and
+    `scp`.
+
+### `dns_nameservers` and `dns_search`
+
+Comma-separated lists of name servers and domains to search. These are added
+to all configured networks.
+
+### `static_host_interface`
+
+If set to a Ganeti network interface number, this interface will be set up
+to handle the IPv4 and IPv6 addresses associated with the instance name
+according to DNS.
+
 
 [Ganeti]: http://www.ganeti.org/
 [cloud-init]: https://cloudinit.readthedocs.io/en/latest/
 [NoCloud]: https://cloudinit.readthedocs.io/en/latest/topics/datasources/nocloud.html
 [cloud-config]: https://cloudinit.readthedocs.io/en/latest/topics/format.html#cloud-config-data
+[cloud-init-merge]: https://cloudinit.readthedocs.io/en/latest/topics/merging.html
