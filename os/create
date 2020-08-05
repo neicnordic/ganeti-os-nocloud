@@ -39,49 +39,51 @@ atexit "umount $rootmnt"
 mkdir -p "${rootmnt}${CLOUD_SEED_DIR}"
 
 
-# Locate and copy user-data
+# Generate user-data
 
 compose_userdata()
 {
-    local parts part payload
+    local parts part_spec payload
     parse_list_parameter parts "${OSP_CLOUD_USERDATA}"
-    for part in "${parts[@]}"; do
-	payload="${part#*:}"
-	case "${part%%:*}" in
+    echo '#include'
+    for index in `seq ${#parts[@]}`; do
+	part_spec="${parts[index-1]}"
+	part_file="${CLOUD_SEED_DIR}/user-data-${index}"
+	payload="${part_spec#*:}"
+	case "${part_spec%%:*}" in
 	    file)
-		(cd /etc/ganeti/nocloud/user-data; cat "${payload}")
+		echo "${part_file}"
+		( cd /etc/ganeti/nocloud/user-data;
+		  install -m600 "${payload}" "${rootmnt}${part_file}" )
+		;;
+	    script)
+		echo "${part_file}"
+		( PATH="/etc/ganeti/nocloud/user-data:$PATH";
+		  "${payload}" > "${rootmnt}${part_file}" )
 		;;
 	    base64)
-		echo -n "${payload}" | base64 -d
-		;;
-	    line)
-		echo "${payload}"
+		echo "${part_file}"
+		echo -n "${payload}" | base64 -d > "${rootmnt}${part_file}"
 		;;
 	    http|https|ftp|sftp|tftp|scp)
-		curl -s "${payload}"
+		echo "${payload}"
 		;;
 	esac
     done
 }
 
+umask 077
 if [ -n "${OSP_CLOUD_USERDATA}" ]; then
-    # Using an intermediate temporary file to avoid holding the mount point in
-    # case something goes wrong.
-    userdata=`mktemp /tmp/ganeti-os-nocloud-userdata.XXXXXX`
-    atexit "rm -f $userdata"
-    compose_userdata > "${userdata}"
+    compose_userdata > "${rootmnt}${CLOUD_SEED_DIR}/user-data"
 else
     for file in "${OS_VARIANT}.yml" "default.yml"; do
-	if [ -e "/etc/ganeti/nocloud/user-data/${file}" ]; then
-	    userdata="/etc/ganeti/nocloud/user-data/${file}"
+	userdata="/etc/ganeti/nocloud/user-data/${file}"
+	if [ -e "${userdata}" ]; then
+	    install -m600 "${userdata}" "${rootmnt}${CLOUD_SEED_DIR}/user-data"
 	    break
 	fi
     done
 fi
-if [ -n "${userdata}" ]; then
-    install -m600 "${userdata}" "${rootmnt}${CLOUD_SEED_DIR}/user-data"
-fi
-
 
 # Generate meta-data and network-config
 
