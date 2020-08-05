@@ -68,6 +68,10 @@ compose_userdata()
 	    http|https|ftp|sftp|tftp|scp)
 		echo "${payload}"
 		;;
+	    *)
+		echo 1>&2 "Unknown URL scheme ${part_spec%%:*}"
+		exit 2
+		;;
 	esac
     done
 }
