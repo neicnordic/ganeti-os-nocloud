@@ -175,6 +175,7 @@ generate_network_config()
 	fi
 	if [ -n "$nic_gateway6" ]; then
 	    echo         "    gateway6: '${nic_gateway6}'"
+	    echo         "    accept-ra: false"
 	fi
 	if [ -n "$OSP_DNS_NAMESERVERS" ]; then
 	    echo         "    nameservers:"
