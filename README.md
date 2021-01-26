@@ -8,7 +8,7 @@ picked up by the [NoCloud][] data source.
 
 ### Preparation
 
-Obtain [openstack-obtain-images][cloud-init images] for your guest Operating
+Obtain [cloud-init images][openstack-obtain-images] for your guest Operating
 System.
 
 Place the needed cloud-init images to `/var/cache/ganeti-cloudimg` and
@@ -81,3 +81,4 @@ according to DNS.
 [cloud-config]: https://cloudinit.readthedocs.io/en/latest/topics/format.html#cloud-config-data
 [cloud-init-merge]: https://cloudinit.readthedocs.io/en/latest/topics/merging.html
 [openstack-obtain-images]: https://docs.openstack.org/image-guide/obtain-images.html
+
