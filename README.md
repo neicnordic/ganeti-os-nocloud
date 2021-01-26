@@ -19,7 +19,8 @@ configuration file and add the name to `/etc/ganeti/nocloud/variants.list`.
 
 Next, put your [cloud config data][cloud-config] under
 `/etc/ganeti/nocloud/user-data/`.  The OS creation script will look for
-`${OS_VARIANT}.yml` then `default.yml`. Alternatively provide user data by
+`${OS_VARIANT}.yml` then `default.yml`. You may find [these cloud-config
+examples][cloud-config-examples] handy.  Alternatively provide user data by
 setting the `cloud_userdata` OS parameter to a list of sources, see the
 documentation of this parameter below.
 
@@ -79,6 +80,7 @@ according to DNS.
 [cloud-init]: https://cloudinit.readthedocs.io/en/latest/
 [NoCloud]: https://cloudinit.readthedocs.io/en/latest/topics/datasources/nocloud.html
 [cloud-config]: https://cloudinit.readthedocs.io/en/latest/topics/format.html#cloud-config-data
+[cloud-config-examples]: https://cloudinit.readthedocs.io/en/latest/topics/examples.html#yaml-examples
 [cloud-init-merge]: https://cloudinit.readthedocs.io/en/latest/topics/merging.html
 [openstack-obtain-images]: https://docs.openstack.org/image-guide/obtain-images.html
 
