@@ -8,8 +8,8 @@ picked up by the [NoCloud][] data source.
 
 ### Preparation
 
-Obtain [openstack-obtain-images][cloud-init images for your guest Operating
-System].
+Obtain [openstack-obtain-images][cloud-init images] for your guest Operating
+System.
 
 Place the needed cloud-init images to `/var/cache/ganeti-cloudimg` and
 distribute them to all nodes.  The expected file name of an image is
