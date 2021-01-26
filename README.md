@@ -8,7 +8,10 @@ picked up by the [NoCloud][] data source.
 
 ### Preparation
 
-Download the needed cloud-init images to `/var/cache/ganeti-cloudimg` and
+Obtain [openstack-obtain-images][cloud-init images for your guest Operating
+System].
+
+Place the needed cloud-init images to `/var/cache/ganeti-cloudimg` and
 distribute them to all nodes.  The expected file name of an image is
 specified in the corresponding configuration file found under
 `/etc/ganeti/nocloud/variants/`.  To add a missing OS variant, create the
@@ -77,3 +80,4 @@ according to DNS.
 [NoCloud]: https://cloudinit.readthedocs.io/en/latest/topics/datasources/nocloud.html
 [cloud-config]: https://cloudinit.readthedocs.io/en/latest/topics/format.html#cloud-config-data
 [cloud-init-merge]: https://cloudinit.readthedocs.io/en/latest/topics/merging.html
+[openstack-obtain-images]: https://docs.openstack.org/image-guide/obtain-images.html
