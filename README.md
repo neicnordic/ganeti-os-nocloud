@@ -64,6 +64,9 @@ kinds are supported:
     as belonging to URLs include `http`, `https`, `ftp`, `sftp`, `tftp`, and
     `scp`.
 
+An example `user-data/default.yml` for Ubuntu can be found in
+`examples/ubuntu`.
+
 ### `dns_nameservers` and `dns_search`
 
 Comma-separated lists of name servers and domains to search. These are added

@@ -1,0 +1,31 @@
+#cloud-config
+#
+# It is very very very helpful if the very very very first line of this file
+# very much says '#cloud-config' otherwise Ubuntu will just ignore you.
+# 
+# This is intended as an example. nocloud will do your network configuration,
+# the bare minimum you likely want here is a user who can log in, either via
+# password or ssh key, and sudo.
+#
+# https://help.ubuntu.com/community/CloudInit
+# https://cloudinit.readthedocs.io/en/latest/topics/examples.html#yaml-examples
+
+# Enable password logins (ssh keys are generally safer)
+ssh_pwauth: True
+# Install some packages
+packages:
+  - fish
+  - python
+package_update: true
+# Bring in some admin users
+users:
+  - default
+  - name: foobar
+    gecos: Foo B. Bar
+    primary_group: foobar
+    groups: users
+    selinux_user: staff_u
+    expiredate: '2012-09-01'
+    ssh_import_id: foobar
+    lock_passwd: false
+    passwd: $6$j212wezy$7H/1LT4f9/N3wpgNunhsIqtMj62OKiS3nyNwuizouQc3u7MbYCarYeAHWYPYb2FT.lbioDm2RrkJPb9BZMN1O/
