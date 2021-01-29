@@ -60,3 +60,23 @@ parse_list_parameter()
 	eval $1+='("$local__x")'
     done
 }
+
+# Adapted from ganeti-instance-debootstrap.
+map_disk0() {
+  blockdev="$1"
+  filesystem_dev_base=`kpartx -l $blockdev | \
+		       grep -m 1 -- "p1 :[0-9 ]* $blockdev " | \
+		       awk '{print $1}'`
+  if [ -z "$filesystem_dev_base" ]; then
+    die "Cannot interpret kpartx output and get partition mapping"
+  fi
+  kpartx -a -s $blockdev > /dev/null
+  filesystem_dev="/dev/mapper/$filesystem_dev_base"
+  if [ ! -b "$filesystem_dev" ]; then
+    die "Can't find kpartx mapped partition: $filesystem_dev"
+  fi
+  echo "$filesystem_dev"
+}
+unmap_disk0() {
+  kpartx -d "$1"
+}
