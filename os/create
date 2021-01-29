@@ -31,21 +31,8 @@ atexit "rmdir $rootmnt"
 kpartx -a "$targetdev"
 atexit "kpartx -d $targetdev"
 
-#mapperbase="/dev/mapper/`basename $targetdev`"
-#rootdev="${mapperbase}p1"
-
-# I am not proud of this, but here's what my system looks like:
-# # kpartx -l "$targetdev"
-# GPT:Primary header thinks Alt. header is not at the end of the disk.
-# GPT:Alternate GPT header not at the end of the disk.
-# GPT: Use GNU Parted to correct GPT errors.
-# xenvg-cc847d00--1597--4a05--9b08--1ae07256a901.disk0p1 : 0 4384735 /dev/xenvg/cc847d00-1597-4a05-9b08-1ae07256a901.disk0 227328
-# xenvg-cc847d00--1597--4a05--9b08--1ae07256a901.disk0p14 : 0 8192 /dev/xenvg/cc847d00-1597-4a05-9b08-1ae07256a901.disk0 2048
-# xenvg-cc847d00--1597--4a05--9b08--1ae07256a901.disk0p15 : 0 217088 /dev/xenvg/cc847d00-1597-4a05-9b08-1ae07256a901.disk0 10240
-# So ....
-
-rootdev="/dev/mapper/`kpartx -l $targetdev | grep $targetdev | head -1 | awk '{print $1}'`"
-mount "$rootdev" "$rootmnt"
+mapperbase="/dev/mapper/`basename $targetdev`"
+rootdev="${mapperbase}p1"
 atexit "umount $rootmnt"
 
 mkdir -p "${rootmnt}${CLOUD_SEED_DIR}"
