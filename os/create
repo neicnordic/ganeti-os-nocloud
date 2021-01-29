@@ -33,6 +33,7 @@ atexit "kpartx -d $targetdev"
 
 mapperbase="/dev/mapper/`basename $targetdev`"
 rootdev="${mapperbase}p1"
+mount "$rootdev" "$rootmnt"
 atexit "umount $rootmnt"
 
 mkdir -p "${rootmnt}${CLOUD_SEED_DIR}"
