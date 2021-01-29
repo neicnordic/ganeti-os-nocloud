@@ -31,8 +31,10 @@ atexit "rmdir $rootmnt"
 kpartx -a "$targetdev"
 atexit "kpartx -d $targetdev"
 
-mapperbase="/dev/mapper/`basename $targetdev`"
-rootdev="${mapperbase}p1"
+#mapperbase="/dev/mapper/`basename $targetdev`"
+#rootdev="${mapperbase}p1"
+
+rootdev="/dev/mapper/`kpartx -l $targetdev | grep $targetdev | head -1 | awk '{print $1}'`"
 mount "$rootdev" "$rootmnt"
 atexit "umount $rootmnt"
 
