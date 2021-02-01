@@ -28,11 +28,8 @@ qemu-img convert -f qcow2 -O raw "$IMAGE_DIR/$IMAGE_FILE" "$targetdev"
 rootmnt="`mktemp -d /tmp/ganeti-os-nocloud-root.XXXXXX`"
 atexit "rmdir $rootmnt"
 
-kpartx -a "$targetdev"
-atexit "kpartx -d $targetdev"
-
-mapperbase="/dev/mapper/`basename $targetdev`"
-rootdev="${mapperbase}p1"
+rootdev=`map_disk0 $targetdev`
+atexit "unmap_disk0 $targetdev"
 mount "$rootdev" "$rootmnt"
 atexit "umount $rootmnt"
 
