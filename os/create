@@ -119,7 +119,6 @@ generate_network_config()
 {
     local address i ip ipv4_prefixlen ipv6_prefixlen prefixlen
     local dns_nameservers dns_search
-    local IFS=,
     echo "version: 2"
     echo "ethernets:"
     for i in $(seq 0 $(expr $NIC_COUNT - 1)); do
