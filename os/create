@@ -28,13 +28,8 @@ qemu-img convert -f qcow2 -O raw "$IMAGE_DIR/$IMAGE_FILE" "$targetdev"
 rootmnt="`mktemp -d /tmp/ganeti-os-nocloud-root.XXXXXX`"
 atexit "rmdir $rootmnt"
 
-kpartx -a "$targetdev"
-atexit "kpartx -d $targetdev"
-
-#mapperbase="/dev/mapper/`basename $targetdev`"
-#rootdev="${mapperbase}p1"
-
-rootdev="/dev/mapper/`kpartx -l $targetdev | grep $targetdev | head -1 | awk '{print $1}'`"
+rootdev=`map_disk0 $targetdev`
+atexit "unmap_disk0 $targetdev"
 mount "$rootdev" "$rootmnt"
 atexit "umount $rootmnt"
 
@@ -124,7 +119,6 @@ generate_network_config()
 {
     local address i ip ipv4_prefixlen ipv6_prefixlen prefixlen
     local dns_nameservers dns_search
-    local IFS=,
     echo "version: 2"
     echo "ethernets:"
     for i in $(seq 0 $(expr $NIC_COUNT - 1)); do
@@ -177,6 +171,7 @@ generate_network_config()
 	fi
 	if [ -n "$nic_gateway6" ]; then
 	    echo         "    gateway6: '${nic_gateway6}'"
+	    echo         "    accept-ra: false"
 	fi
 	if [ -n "$OSP_DNS_NAMESERVERS" ]; then
 	    echo         "    nameservers:"
