@@ -86,4 +86,3 @@ according to DNS.
 [cloud-config-examples]: https://cloudinit.readthedocs.io/en/latest/topics/examples.html#yaml-examples
 [cloud-init-merge]: https://cloudinit.readthedocs.io/en/latest/topics/merging.html
 [openstack-obtain-images]: https://docs.openstack.org/image-guide/obtain-images.html
-

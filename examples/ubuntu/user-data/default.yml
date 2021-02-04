@@ -2,7 +2,7 @@
 #
 # It is very very very helpful if the very very very first line of this file
 # very much says '#cloud-config' otherwise Ubuntu will just ignore you.
-# 
+#
 # This is intended as an example. nocloud will do your network configuration,
 # the bare minimum you likely want here is a user who can log in, either via
 # password or ssh key, and sudo.
