@@ -30,7 +30,7 @@ atexit "rmdir $rootmnt"
 
 rootdev=`map_disk0 $targetdev`
 atexit "unmap_disk0 $targetdev"
-mount "$rootdev" "$rootmnt"
+mount -o nosuid,nodev,noexec "$rootdev" "$rootmnt"
 atexit "umount $rootmnt"
 
 mkdir -p "${rootmnt}${CLOUD_SEED_DIR}"
