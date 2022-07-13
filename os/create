@@ -129,11 +129,16 @@ generate_network_config()
 	nic_network_subnet6=$(eval echo \$NIC_${i}_NETWORK_SUBNET6)
 	nic_gateway4=$(eval echo \$NIC_${i}_NETWORK_GATEWAY)
 	nic_gateway6=$(eval echo \$NIC_${i}_NETWORK_GATEWAY6)
-	echo             "  eth${i}:"
+	nic_name=$(eval echo \$NIC_${i}_NAME)
+	if [ -z "$nic_name"]; then
+	    nic_name="eth${i}"
+	fi
+	echo             "  ${nic_name}:"
 	if [ -n "$nic_mac" ]; then
 	    echo         "    match: {macaddress: '$nic_mac'}"
+	    echo         "    set-name: '$nic_name'"
 	else
-	    echo         "    match: {name: 'eth${i}'}"
+	    echo         "    match: {name: '$nic_name'}"
 	fi
 	if [ -z "$nic_network_subnet4" ]; then
 	    ipv4_prefixlen=24
