@@ -41,6 +41,9 @@ records for the host will be added to the first interface, in which case the
 `ip` network parameter may be omitted.  This allows creating IPv6-only VMs
 or VMs with multiple IP numbers.
 
+If you also provide the `name` parameter, the generated network
+configuration will instruct cloud-init to rename the interface accordingly.
+
 DNS configuration can be passed though the OS parameters `dns_nameservers`
 and `dns_search` which are comma-separated lists of IPs and domains,
 respectively.
