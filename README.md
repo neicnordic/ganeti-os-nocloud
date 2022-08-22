@@ -4,6 +4,18 @@ This is a [cloud-init][] OS definition for [Ganeti][].  It injects the
 meta-data and user-data directly into file system of the target host, to be
 picked up by the [NoCloud][] data source.
 
+This currently does not work with Rocky 9 cloud images.  We have a
+solution/workaround to be committed soon which will require attaching an
+generated ISO image on first boot via command line options.
+
+There are plans from the Ganeti project to develop two new providers:
+
+  * [instance-simpleimage][] will deploy a fixed image.
+  * [instance-cloudimage][] will deploy a cloud-init image using metad.
+
+The latter should provide an attractive alternative to the current provider
+when available.
+
 ## Usage
 
 ### Preparation
@@ -89,3 +101,5 @@ according to DNS.
 [cloud-config-examples]: https://cloudinit.readthedocs.io/en/latest/topics/examples.html#yaml-examples
 [cloud-init-merge]: https://cloudinit.readthedocs.io/en/latest/topics/merging.html
 [openstack-obtain-images]: https://docs.openstack.org/image-guide/obtain-images.html
+[instance-simpleimage]: https://github.com/ganeti/instance-simpleimage
+[instance-cloudimage]: https://github.com/ganeti/instance-cloudimage
