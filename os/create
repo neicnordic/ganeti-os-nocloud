@@ -23,7 +23,7 @@ set -e
 
 targetdev="$DISK_0_PATH"
 
-qemu-img convert -f qcow2 -O raw "$IMAGE_DIR/$IMAGE_FILE" "$targetdev"
+qemu-img convert -f "$IMAGE_FORMAT" -O raw "$IMAGE_DIR/$IMAGE_FILE" "$targetdev"
 
 rootmnt="`mktemp -d /tmp/ganeti-os-nocloud-root.XXXXXX`"
 atexit "rmdir $rootmnt"

@@ -21,13 +21,22 @@ when available.
 ### Preparation
 
 Obtain [cloud-init images][openstack-obtain-images] for your guest Operating
-System.
+System.  The image is expected to be in qcow2 format by default, but other
+formats supported by `qemu-img` can be selected by the OS variant
+definition.
 
 Place the needed cloud-init images to `/var/cache/ganeti-cloudimg` and
 distribute them to all nodes.  The expected file name of an image is
 specified in the corresponding configuration file found under
 `/etc/ganeti/nocloud/variants/`.  To add a missing OS variant, create the
 configuration file and add the name to `/etc/ganeti/nocloud/variants.list`.
+The variant configuration supports the following variables:
+
+  - `IMAGE_FILE` is the filename of the image. This option is required.
+  - `IMAGE_FORMAT` is passed to the `-f` option of `qemu-img`, by default
+    `qcow2`.
+  - `IMAGE_DIR` is the directory where to look for images, by default
+    `/var/cache/ganeti-cloudimg`.
 
 Next, put your [cloud config data][cloud-config] under
 `/etc/ganeti/nocloud/user-data/`.  The OS creation script will look for

@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 IMAGE_DIR="/var/cache/ganeti-cloudimg"
+IMAGE_FORMAT="qcow2"
 CLOUD_SEED_DIR="/var/lib/cloud/seed/nocloud"
 
 if [ -r "/etc/ganeti/nocloud/variants/${OS_VARIANT}.conf" ]; then
