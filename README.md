@@ -1,22 +1,11 @@
 ## Synopsis
+This is a fork of (neicnordic's)[https://github.com/neicnordic/ganeti-os-nocloud] . It strives to follow the implementation of the original as well as the guidelines listed in [instance-cloudimage][],  with a few important exceptions:
 
-This is a [cloud-init][] OS definition for [Ganeti][].  It injects the
-meta-data and user-data directly into file system of the target host, to be
-picked up by the [NoCloud][] data source.
-
-This currently does not work with Rocky 9 cloud images.  We have a
-solution/workaround to be committed soon which will require attaching an
-generated ISO image on first boot via command line options.
-
-There are plans from the Ganeti project to develop two new providers:
-
-  * [instance-simpleimage][] will deploy a fixed image.
-  * [instance-cloudimage][] will deploy a cloud-init image using metad.
-
-The latter should provide an attractive alternative to the current provider
-when available.
+* Uses cloud-init config-drive exclusively. There are no attempts to mount/inject data into the filesystem.
+* Does not handle config-drive creation. The create script accepts a path to the config-drive, but it doesn't set up or validate the config-drive in any way. This is akin to cloud provisioning.
 
 ## Usage
+TBA
 
 ### Preparation
 
@@ -37,13 +26,6 @@ The variant configuration supports the following variables:
     `qcow2`.
   - `IMAGE_DIR` is the directory where to look for images, by default
     `/var/cache/ganeti-cloudimg`.
-
-Next, put your [cloud config data][cloud-config] under
-`/etc/ganeti/nocloud/user-data/`.  The OS creation script will look for
-`${OS_VARIANT}.yml` then `default.yml`. You may find [these cloud-config
-examples][cloud-config-examples] handy.  Alternatively provide user data by
-setting the `cloud_userdata` OS parameter to a list of sources, see the
-documentation of this parameter below.
 
 ### VM Creation
 
