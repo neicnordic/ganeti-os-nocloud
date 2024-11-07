@@ -37,6 +37,8 @@ The variant configuration supports the following variables:
     `qcow2`.
   - `IMAGE_DIR` is the directory where to look for images, by default
     `/var/cache/ganeti-cloudimg`.
+  - `IMAGE_ROOTFS_PARTNO` is the partition number of the root filesystem
+     in the image. Used when adding cloud config.
 
 Next, put your [cloud config data][cloud-config] under
 `/etc/ganeti/nocloud/user-data/`.  The OS creation script will look for
