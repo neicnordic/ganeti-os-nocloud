@@ -66,7 +66,7 @@ parse_list_parameter()
 map_disk0() {
   blockdev="$1"
   filesystem_dev_base=`kpartx -l $blockdev | \
-		       grep -m 1 -- "p1 :[0-9 ]* $blockdev " | \
+		       grep -m 1 -- "p${IMAGE_ROOTFS_PARTNO:-1} :[0-9 ]* $blockdev " | \
 		       awk '{print $1}'`
   if [ -z "$filesystem_dev_base" ]; then
     die "Cannot interpret kpartx output and get partition mapping"
